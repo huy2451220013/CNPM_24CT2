@@ -1,0 +1,430 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}PicklePro - Trang Chủ & Đặt Sân Pickleball Đẳng Cấp{% endblock %}
+
+{% block content %}
+
+<!-- HERO BANNER -->
+<section class="hero-gradient text-white relative overflow-hidden py-16 lg:py-24">
+    <!-- Background visual circles -->
+    <div class="absolute -right-20 -top-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -left-20 -bottom-20 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <div class="lg:col-span-7 space-y-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold tracking-wide">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 badge-pulse"></span>
+                    HỆ THỐNG ĐẶT SÂN SỐ 1 TP. HỒ CHÍ MINH
+                </div>
+                
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
+                    Đam Mê Bùng Cháy Cùng <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">PicklePro</span>
+                </h1>
+
+                <p class="text-slate-300 text-base sm:text-lg leading-relaxed max-w-2xl font-medium">
+                    Đặt sân trực tuyến chỉ trong 30 giây. Cụm sân chuẩn thi đấu quốc tế USAPA, mặt sân giảm chấn, hệ thống điều hòa & đèn LED chống lóa hiện đại bậc nhất.
+                </p>
+
+                <!-- CTA BUTTONS -->
+                <div class="flex flex-wrap items-center gap-4 pt-2">
+                    <a href="{% url 'book_court' %}" class="px-7 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-extrabold shadow-lg shadow-emerald-500/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-300"></i> Đặt sân giữ chỗ ngay
+                    </a>
+                    <a href="{% url 'court_schedule' %}" class="px-6 py-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-200 hover:text-white font-bold border border-slate-700 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-check text-cyan-400"></i> Xem lịch sân trống hôm nay
+                    </a>
+                </div>
+
+                <!-- TRUST BADGES -->
+                <div class="grid grid-cols-3 gap-4 pt-4 border-t border-slate-800 max-w-lg">
+                    <div>
+                        <div class="text-xl font-black text-white">6 Sân</div>
+                        <div class="text-xs text-slate-400">Chuẩn USAPA Pro</div>
+                    </div>
+                    <div>
+                        <div class="text-xl font-black text-emerald-400">100%</div>
+                        <div class="text-xs text-slate-400">Không lo trùng giờ</div>
+                    </div>
+                    <div>
+                        <div class="text-xl font-black text-amber-400">VietQR</div>
+                        <div class="text-xs text-slate-400">Quét mã tiện lợi</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEARCH / QUICK BOOK BOX -->
+            <div class="lg:col-span-5">
+                <div class="bg-white/95 backdrop-blur-md rounded-2xl p-6 sm:p-8 text-slate-800 shadow-2xl border border-white/20">
+                    <h3 class="text-xl font-black text-slate-900 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass text-emerald-600"></i> Tìm & Lọc Sân Nhanh
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-6">Chọn tiêu chí phù hợp với bạn để tìm sân trống nhanh nhất</p>
+
+                    <form method="GET" action="{% url 'dashboard' %}" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Từ khóa tìm kiếm</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-search absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+                                <input type="text" name="q" value="{{ query }}" placeholder="Tên sân, địa chỉ, khu vực..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Loại sân</label>
+                                <select name="type" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                                    <option value="">Tất cả loại sân</option>
+                                    <option value="indoor" {% if type_filter == "indoor" %}selected{% endif %}>Trong nhà</option>
+                                    <option value="outdoor" {% if type_filter == "outdoor" %}selected{% endif %}>Ngoài trời</option>
+                                    <option value="vip" {% if type_filter == "vip" %}selected{% endif %}>VIP Máy lạnh</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Trạng thái</label>
+                                <select name="status" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                                    <option value="">Tất cả trạng thái</option>
+                                    <option value="available" {% if status_filter == "available" %}selected{% endif %}>Đang hoạt động</option>
+                                    <option value="maintenance" {% if status_filter == "maintenance" %}selected{% endif %}>Đang bảo trì</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Sắp xếp theo giá</label>
+                            <select name="sort" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                                <option value="name" {% if sort_by == "name" %}selected{% endif %}>Mặc định theo tên</option>
+                                <option value="price_asc" {% if sort_by == "price_asc" %}selected{% endif %}>Giá: Thấp đến cao</option>
+                                <option value="price_desc" {% if sort_by == "price_desc" %}selected{% endif %}>Giá: Cao đến thấp</option>
+                            </select>
+                        </div>
+
+                        <div class="flex gap-2 pt-2">
+                            <button type="submit" class="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-all">
+                                <i class="fa-solid fa-filter mr-1"></i> Áp dụng bộ lọc
+                            </button>
+                            {% if query or type_filter or status_filter or sort_by != "name" %}
+                            <a href="{% url 'dashboard' %}" class="px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition-colors text-center">
+                                Đặt lại
+                            </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- KPI / STATS BAR -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="bg-white rounded-2xl p-5 shadow-lg border border-slate-100 flex items-center gap-4 hover:shadow-xl transition-shadow">
+            <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl font-bold">
+                <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Tổng số sân</p>
+                <div class="text-2xl font-black text-slate-800">{{ total_courts }}</div>
+                <span class="text-[11px] text-emerald-600 font-semibold">Cụm sân tiêu chuẩn</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 shadow-lg border border-slate-100 flex items-center gap-4 hover:shadow-xl transition-shadow">
+            <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl font-bold">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Sân hoạt động</p>
+                <div class="text-2xl font-black text-blue-600">{{ available_courts }}</div>
+                <span class="text-[11px] text-slate-500 font-medium">Sẵn sàng nhận lịch</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 shadow-lg border border-slate-100 flex items-center gap-4 hover:shadow-xl transition-shadow">
+            <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl font-bold">
+                <i class="fa-solid fa-wrench"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Đang bảo trì</p>
+                <div class="text-2xl font-black text-amber-600">{{ maintenance_courts }}</div>
+                <span class="text-[11px] text-slate-500 font-medium">Nâng cấp mặt sân</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 shadow-lg border border-slate-100 flex items-center gap-4 hover:shadow-xl transition-shadow">
+            <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl font-bold">
+                <i class="fa-solid fa-calendar-day"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Lịch đặt hôm nay</p>
+                <div class="text-2xl font-black text-purple-600">{{ today_bookings_count }}</div>
+                <span class="text-[11px] text-slate-500 font-medium">Tổng {{ total_bookings_count }} lượt đặt</span>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- COURTS LIST SECTION -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+        <div>
+            <div class="flex items-center gap-2 text-emerald-600 font-bold text-xs uppercase tracking-widest">
+                <i class="fa-solid fa-table-tennis-paddle-ball"></i> Danh sách cụm sân
+            </div>
+            <h2 class="text-3xl font-black text-slate-900 mt-1">Các Sân Pickleball Nổi Bật</h2>
+            <p class="text-sm text-slate-500 mt-1">Chọn sân bạn ưng ý và kiểm tra khung giờ còn trống</p>
+        </div>
+
+        <!-- Filter tabs quick -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
+            <a href="{% url 'dashboard' %}" class="px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all {% if not type_filter %}bg-slate-900 text-white shadow-sm{% else %}bg-slate-200/80 text-slate-700 hover:bg-slate-300{% endif %}">
+                Tất cả
+            </a>
+            <a href="{% url 'dashboard' %}?type=indoor" class="px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all {% if type_filter == 'indoor' %}bg-slate-900 text-white shadow-sm{% else %}bg-slate-200/80 text-slate-700 hover:bg-slate-300{% endif %}">
+                Trong nhà
+            </a>
+            <a href="{% url 'dashboard' %}?type=outdoor" class="px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all {% if type_filter == 'outdoor' %}bg-slate-900 text-white shadow-sm{% else %}bg-slate-200/80 text-slate-700 hover:bg-slate-300{% endif %}">
+                Ngoài trời
+            </a>
+            <a href="{% url 'dashboard' %}?type=vip" class="px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all {% if type_filter == 'vip' %}bg-slate-900 text-white shadow-sm{% else %}bg-slate-200/80 text-slate-700 hover:bg-slate-300{% endif %}">
+                VIP Lounge
+            </a>
+        </div>
+    </div>
+
+    <!-- GRID COURTS -->
+    {% if courts %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for court in courts %}
+        <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col group">
+            
+            <!-- IMAGE & BADGES -->
+            <div class="relative h-56 bg-slate-200 overflow-hidden">
+                {% if court.image_url %}
+                    <img src="{{ court.image_url }}" alt="{{ court.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                {% else %}
+                    <div class="w-full h-full flex items-center justify-center bg-emerald-900 text-emerald-300">
+                        <i class="fa-solid fa-table-tennis-paddle-ball text-5xl"></i>
+                    </div>
+                {% endif %}
+                
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent"></div>
+
+                <!-- TOP BADGES -->
+                <div class="absolute top-3 left-3 flex gap-2">
+                    <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold tracking-wide uppercase shadow-sm bg-slate-900/80 backdrop-blur-md text-white border border-white/20">
+                        {{ court.code }}
+                    </span>
+                    <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold tracking-wide uppercase shadow-sm {% if court.court_type == 'vip' %}bg-amber-500 text-white{% elif court.court_type == 'outdoor' %}bg-sky-500 text-white{% else %}bg-emerald-600 text-white{% endif %}">
+                        {{ court.get_court_type_display }}
+                    </span>
+                </div>
+
+                <!-- STATUS BADGE -->
+                <div class="absolute top-3 right-3">
+                    {% if court.status == 'available' %}
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500 text-white shadow-md">
+                            <span class="w-2 h-2 rounded-full bg-white badge-pulse"></span> Hoạt động
+                        </span>
+                    {% elif court.status == 'maintenance' %}
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-white shadow-md">
+                            <i class="fa-solid fa-wrench text-[10px]"></i> Đang bảo trì
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-500 text-white shadow-md">
+                            Đã đóng
+                        </span>
+                    {% endif %}
+                </div>
+
+                <!-- BOTTOM OVERLAY INFO -->
+                <div class="absolute bottom-3 left-3 right-3 text-white flex justify-between items-end">
+                    <div>
+                        <p class="text-xs text-slate-300 flex items-center gap-1">
+                            <i class="fa-solid fa-location-dot text-emerald-400"></i> {{ court.location }}
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-slate-300 block">Giá thuê</span>
+                        <span class="text-lg font-black text-amber-300">{{ court.price_per_hour|intcomma }} đ</span>
+                        <span class="text-[10px] text-slate-300">/giờ</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD BODY -->
+            <div class="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors">
+                        {{ court.name }}
+                    </h3>
+
+                    <p class="text-xs text-slate-500 line-clamp-2 mb-4 leading-relaxed">
+                        {{ court.description|default:"Sân thi đấu tiêu chuẩn với đầy đủ tiện ích và dịch vụ hiện đại cho trải nghiệm hoàn hảo." }}
+                    </p>
+
+                    <!-- FEATURES -->
+                    <div class="pt-3 border-t border-slate-100 mb-4">
+                        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Tiện ích đi kèm:</div>
+                        <p class="text-xs text-slate-600 flex items-start gap-1.5 leading-relaxed">
+                            <i class="fa-solid fa-circle-check text-emerald-500 mt-0.5 text-xs flex-shrink-0"></i>
+                            <span>{{ court.features }}</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="pt-4 border-t border-slate-100 flex items-center gap-2">
+                    {% if court.status == 'available' %}
+                        <a href="{% url 'book_court_specific' court.id %}" class="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm text-center shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-calendar-plus"></i> Đặt sân này
+                        </a>
+                    {% else %}
+                        <button disabled class="flex-1 py-2.5 px-4 rounded-xl bg-slate-200 text-slate-400 font-bold text-sm text-center cursor-not-allowed">
+                            <i class="fa-solid fa-ban"></i> Đang bảo trì
+                        </button>
+                    {% endif %}
+
+                    <a href="{% url 'court_detail' court.id %}" title="Xem lịch giờ chi tiết" class="py-2.5 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition-colors flex items-center justify-center">
+                        <i class="fa-solid fa-clock"></i>
+                    </a>
+
+                    {% if user.is_authenticated and user.is_staff %}
+                    <form method="POST" action="{% url 'toggle_court_status' court.id %}" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" title="Chuyển trạng thái (Admin)" class="py-2.5 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold text-xs border border-amber-200 transition-colors">
+                            <i class="fa-solid fa-repeat"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-16 bg-white rounded-2xl border border-slate-200">
+        <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-2xl mb-4">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-800">Không tìm thấy sân phù hợp</h3>
+        <p class="text-sm text-slate-500 mt-1 mb-4">Hãy thử điều chỉnh lại bộ lọc hoặc từ khóa tìm kiếm</p>
+        <a href="{% url 'dashboard' %}" class="px-5 py-2.5 bg-emerald-600 text-white font-bold text-sm rounded-xl">
+            Xem tất cả các sân
+        </a>
+    </div>
+    {% endif %}
+
+</section>
+
+<!-- TODAY'S SCHEDULE TICKER SECTION -->
+{% if upcoming_bookings %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-3">
+            <div>
+                <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 badge-pulse"></span> Trực tiếp hôm nay ({{ today|date:"d/m/Y" }})
+                </span>
+                <h3 class="text-2xl font-black tracking-tight mt-1">Lịch Thi Đấu & Giao Lưu Sắp Diễn Ra</h3>
+            </div>
+            <a href="{% url 'court_schedule' %}" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition-colors w-fit">
+                Xem toàn bộ lịch ngày <i class="fa-solid fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for b in upcoming_bookings %}
+            <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl p-4 flex items-center justify-between">
+                <div>
+                    <div class="text-sm font-bold text-white">{{ b.court.name }}</div>
+                    <div class="text-xs text-slate-400 mt-0.5">Khách: {{ b.customer_name }}</div>
+                </div>
+                <div class="text-right">
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                        {{ b.start_time|time:"H:i" }} - {{ b.end_time|time:"H:i" }}
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- WHY CHOOSE PICKLEPRO -->
+<section class="bg-slate-100 py-20 border-y border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <h2 class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-2">Đẳng Cấp & Uy Tín</h2>
+            <h3 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">Tại Sao Nên Chọn Cụm Sân PicklePro?</h3>
+            <p class="text-slate-500 text-sm mt-3">Chúng tôi mang đến môi trường thể thao chuẩn mực và dịch vụ thuận tiện nhất cho mọi người chơi.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            
+            <div class="bg-white rounded-2xl p-7 shadow-sm border border-slate-200/80 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl mb-5">
+                    <i class="fa-solid fa-medal"></i>
+                </div>
+                <h4 class="text-lg font-bold text-slate-900 mb-2">Mặt Sân Chuẩn USAPA</h4>
+                <p class="text-xs text-slate-500 leading-relaxed">Sơn acrylic 5 lớp công nghệ giảm chấn hiện đại, độ nảy bóng đồng đều, chống trơn trượt tối đa.</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-7 shadow-sm border border-slate-200/80 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl mb-5">
+                    <i class="fa-solid fa-lightbulb"></i>
+                </div>
+                <h4 class="text-lg font-bold text-slate-900 mb-2">Đèn LED Chống Lóa</h4>
+                <p class="text-xs text-slate-500 leading-relaxed">Hệ thống đèn LED đạt chuẩn 500 Lux chuyên nghiệp cho phép quan sát bóng rõ ràng không bị chói mắt ban đêm.</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-7 shadow-sm border border-slate-200/80 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center text-xl mb-5">
+                    <i class="fa-solid fa-qrcode"></i>
+                </div>
+                <h4 class="text-lg font-bold text-slate-900 mb-2">Thanh Toán VietQR</h4>
+                <p class="text-xs text-slate-500 leading-relaxed">Tự động tạo mã QR chính xác từng đồng, quét mã trên mọi ứng dụng ngân hàng trong 5 giây.</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-7 shadow-sm border border-slate-200/80 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl mb-5">
+                    <i class="fa-solid fa-champagne-glasses"></i>
+                </div>
+                <h4 class="text-lg font-bold text-slate-900 mb-2">Dịch Vụ & Tiện Ích</h4>
+                <p class="text-xs text-slate-500 leading-relaxed">Phòng thay đồ, tắm nóng lạnh, cho thuê vợt bóng USAPA và khu Lounge phục vụ đồ uống tươi mát.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- CALL TO ACTION -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+    <div class="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl p-10 sm:p-16 text-white shadow-2xl relative overflow-hidden">
+        <div class="relative z-10 max-w-2xl mx-auto space-y-6">
+            <h2 class="text-3xl sm:text-4xl font-black tracking-tight">Sẵn Sàng Cho Trận Đấu Tiếp Theo?</h2>
+            <p class="text-emerald-100 text-sm sm:text-base leading-relaxed">
+                Đừng để hết sân vào khung giờ đẹp! Đặt sân ngay hôm nay để có trải nghiệm thể thao thăng hoa cùng bạn bè và đồng nghiệp.
+            </p>
+            <div class="pt-4 flex flex-wrap justify-center gap-4">
+                <a href="{% url 'book_court' %}" class="px-8 py-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold shadow-lg transition-transform hover:scale-105">
+                    <i class="fa-solid fa-calendar-plus mr-1.5 text-emerald-400"></i> Đặt sân ngay bây giờ
+                </a>
+                <a href="tel:0901234567" class="px-7 py-4 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold backdrop-blur-md transition-colors">
+                    <i class="fa-solid fa-phone mr-1.5"></i> Hotline: 0901 234 567
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

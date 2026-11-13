@@ -1,0 +1,65 @@
+# Old root project (removed from GitHub, kept locally)
+/home/
+/mywebsite/
+/manage.py
+/student_portal_db_backup.sql
+
+# Virtual Environment
+venv/
+env/
+ENV/
+PicklePro/venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Database
+*.sqlite3
+
+# Large compressed files
+*.zip
+*.rar
+PicklePro.zip
+PicklePro/PicklePro.rar
+
+# IDE / Editor
+.vs/
+.vscode/
+.idea/
+~$*
+
+# OS generated
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Report, diagram, presentation, and helper scripts inside PicklePro (kept locally)
+/PicklePro/*.docx
+/PicklePro/*.pptx
+/PicklePro/*.drawio
+/PicklePro/*.txt
+/PicklePro/*.json
+/PicklePro/*.png
+/PicklePro/*.jpg
+/PicklePro/*.svg
+/PicklePro/*.html
+/PicklePro/BAO_CAO_GIUA_KY_CNPM.md
+/PicklePro/extracted_media/
+/PicklePro/add_homepage_to_drawio.py
+/PicklePro/analyze_textbook.py
+/PicklePro/build_*.py
+/PicklePro/convert_to_sqlserver.py
+/PicklePro/create_*.py
+/PicklePro/export_sql_dump.py
+/PicklePro/extract_*.py
+/PicklePro/generate_*.py
+/PicklePro/inject_homepage.py
+/PicklePro/inspect_drawio_structure.py
+/PicklePro/list_headings.py
+/PicklePro/render_matching_sequences.py
+/PicklePro/test_*.py
+/PicklePro/update_*.py
+/PicklePro/word_helpers.py

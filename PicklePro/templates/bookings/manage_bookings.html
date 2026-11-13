@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Bảng Điều Hành Quản Lý Sân - PicklePro Staff{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    
+    <!-- HEADER -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+            <div class="flex items-center gap-2 text-xs font-bold text-amber-500 uppercase tracking-widest mb-1">
+                <i class="fa-solid fa-shield-halved"></i> Khu vực quản trị & điều phối sân
+            </div>
+            <h1 class="text-3xl font-black text-slate-900">Quản Lý & Điều Hành Lịch Đặt Sân</h1>
+            <p class="text-sm text-slate-500 mt-1">Duyệt lịch, cập nhật trạng thái thanh toán và theo dõi hoạt động các cụm sân</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="/admin/" target="_blank" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs shadow-sm transition-colors flex items-center gap-2">
+                <i class="fa-solid fa-gear text-amber-400"></i> Django Admin
+            </a>
+            <a href="{% url 'book_court' %}" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2">
+                <i class="fa-solid fa-plus"></i> Đặt sân hộ khách
+            </a>
+        </div>
+    </div>
+
+    <!-- STATS CARDS -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Doanh thu đã thu</span>
+                <div class="text-xl font-black text-emerald-600">{{ total_revenue|intcomma }} đ</div>
+                <span class="text-[10px] text-slate-500">Từ các đơn đã thanh toán</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <div>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Chờ duyệt đặt</span>
+                <div class="text-xl font-black text-amber-600">{{ pending_count }} đơn</div>
+                <span class="text-[10px] text-slate-500">Cần xác nhận</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Đã xác nhận</span>
+                <div class="text-xl font-black text-blue-600">{{ confirmed_count }} đơn</div>
+                <span class="text-[10px] text-slate-500">Sẵn sàng phục vụ</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-calendar-day"></i>
+            </div>
+            <div>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Lịch chơi hôm nay</span>
+                <div class="text-xl font-black text-purple-600">{{ today_count }} trận</div>
+                <span class="text-[10px] text-slate-500">Ngày {{ today|date:"d/m/Y" }}</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FILTERS BAR -->
+    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 mb-8">
+        <form method="GET" class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">Ngày chơi</label>
+                <input type="date" name="date" value="{{ date_filter }}" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">Trạng thái đặt</label>
+                <select name="status" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Chờ xác nhận</option>
+                    <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>Đã xác nhận</option>
+                    <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Hoàn thành</option>
+                    <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Đã hủy</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">Chọn sân</label>
+                <select name="court" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                    <option value="">Tất cả các sân</option>
+                    {% for c in courts %}
+                    <option value="{{ c.id }}" {% if court_filter == c.id|stringformat:"s" %}selected{% endif %}>
+                        {{ c.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="flex items-end gap-2">
+                <button type="submit" class="flex-1 py-2 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-colors">
+                    Lọc dữ liệu
+                </button>
+                {% if status_filter or date_filter or court_filter %}
+                <a href="{% url 'manage_bookings' %}" class="py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">
+                    Xóa lọc
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- BOOKINGS TABLE WITH FAST ACTION BUTTONS -->
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[950px]">
+                <thead>
+                    <tr class="bg-slate-900 text-white text-xs">
+                        <th class="p-4 font-bold">Mã / Ngày Tạo</th>
+                        <th class="p-4 font-bold">Khách Hàng</th>
+                        <th class="p-4 font-bold">Sân Bóng</th>
+                        <th class="p-4 font-bold">Lịch Thi Đấu</th>
+                        <th class="p-4 font-bold">Tổng Tiền</th>
+                        <th class="p-4 font-bold">Trạng Thái</th>
+                        <th class="p-4 font-bold">Thanh Toán</th>
+                        <th class="p-4 font-bold text-center">Thao Tác Nhanh</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-xs">
+                    {% for b in bookings %}
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                        
+                        <td class="p-4">
+                            <a href="{% url 'booking_detail' b.booking_code %}" class="font-extrabold text-slate-900 hover:text-emerald-600 block">
+                                #{{ b.booking_code }}
+                            </a>
+                            <span class="text-[10px] text-slate-400">{{ b.created_at|date:"d/m H:i" }}</span>
+                        </td>
+
+                        <td class="p-4">
+                            <div class="font-extrabold text-slate-900">{{ b.customer_name }}</div>
+                            <div class="text-[11px] font-semibold text-emerald-600 mt-0.5">
+                                <i class="fa-solid fa-phone text-[10px]"></i> {{ b.customer_phone }}
+                            </div>
+                        </td>
+
+                        <td class="p-4">
+                            <div class="font-bold text-slate-800">{{ b.court.name }}</div>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-semibold">
+                                {{ b.court.code }}
+                            </span>
+                        </td>
+
+                        <td class="p-4">
+                            <div class="font-black text-slate-900">{{ b.booking_date|date:"d/m/Y" }}</div>
+                            <div class="text-[11px] font-bold text-emerald-700 mt-0.5">
+                                {{ b.start_time|time:"H:i" }} - {{ b.end_time|time:"H:i" }}
+                            </div>
+                        </td>
+
+                        <td class="p-4">
+                            <span class="font-black text-slate-900 text-sm">{{ b.total_price|intcomma }} đ</span>
+                            <span class="text-[10px] text-slate-400 block">{{ b.get_payment_method_display }}</span>
+                        </td>
+
+                        <td class="p-4">
+                            {% if b.status == 'confirmed' %}
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">
+                                    Đã xác nhận
+                                </span>
+                            {% elif b.status == 'pending' %}
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800">
+                                    Chờ duyệt
+                                </span>
+                            {% elif b.status == 'completed' %}
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-blue-100 text-blue-800">
+                                    Hoàn thành
+                                </span>
+                            {% else %}
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-red-100 text-red-800">
+                                    Đã hủy
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="p-4">
+                            {% if b.payment_status == 'paid' %}
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                                    Đã thanh toán
+                                </span>
+                            {% else %}
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-red-100 text-red-700 border border-red-200">
+                                    Chưa thanh toán
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <!-- FAST ACTIONS -->
+                        <td class="p-4 text-center">
+                            <div class="flex items-center justify-center gap-1.5">
+                                {% if b.status == 'pending' %}
+                                <form method="POST" action="{% url 'update_booking_status' b.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status" value="confirmed">
+                                    <button type="submit" title="Duyệt đơn này" class="p-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs transition-colors">
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+
+                                {% if b.payment_status == 'unpaid' %}
+                                <form method="POST" action="{% url 'update_booking_status' b.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="payment_status" value="paid">
+                                    <button type="submit" title="Đánh dấu đã thanh toán" class="p-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-bold text-xs transition-colors">
+                                        <i class="fa-solid fa-dollar-sign"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+
+                                {% if b.status == 'confirmed' %}
+                                <form method="POST" action="{% url 'update_booking_status' b.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status" value="completed">
+                                    <button type="submit" title="Đánh dấu hoàn thành trận đấu" class="p-2 rounded-lg bg-purple-500 hover:bg-purple-600 text-white font-bold text-xs transition-colors">
+                                        <i class="fa-solid fa-flag-checkered"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+
+                                {% if b.status != 'cancelled' and b.status != 'completed' %}
+                                <form method="POST" action="{% url 'update_booking_status' b.id %}" class="inline" onsubmit="return confirm('Bạn có chắc muốn hủy đơn này?')">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status" value="cancelled">
+                                    <button type="submit" title="Hủy đơn" class="p-2 rounded-lg bg-red-100 hover:bg-red-200 text-red-600 font-bold text-xs transition-colors">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+
+                                <a href="{% url 'booking_detail' b.booking_code %}" title="Xem chi tiết vé" class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            </div>
+                        </td>
+
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-10 text-slate-400">
+                            Không có lượt đặt sân nào phù hợp với bộ lọc.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

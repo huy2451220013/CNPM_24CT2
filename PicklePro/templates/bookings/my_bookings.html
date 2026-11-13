@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Tra Cứu Lịch Đặt Sân - PicklePro{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    
+    <!-- HEADER -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+            <nav class="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-2">
+                <a href="{% url 'dashboard' %}" class="hover:text-emerald-600 transition-colors">Trang chủ</a>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                <span class="text-slate-800">Lịch sử đặt sân</span>
+            </nav>
+            <h1 class="text-3xl font-black text-slate-900">Tra Cứu Vé & Lịch Đặt Sân</h1>
+            <p class="text-sm text-slate-500 mt-1">Quản lý các lượt đặt sân của bạn hoặc tra cứu nhanh bằng Số điện thoại</p>
+        </div>
+
+        <a href="{% url 'book_court' %}" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 w-fit">
+            <i class="fa-solid fa-calendar-plus"></i> Đặt sân mới
+        </a>
+    </div>
+
+    <!-- PHONE LOOKUP SEARCH BOX -->
+    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 mb-8">
+        <form method="GET" class="flex flex-col sm:flex-row gap-3 items-center">
+            <div class="relative flex-1 w-full">
+                <i class="fa-solid fa-phone absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                <input type="tel" name="phone" value="{{ phone_query }}" placeholder="Nhập số điện thoại đã dùng để đặt sân..." class="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+            </div>
+            <button type="submit" class="w-full sm:w-auto px-7 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-magnifying-glass"></i> Tra cứu vé
+            </button>
+        </form>
+        {% if phone_query %}
+        <p class="text-xs text-slate-500 mt-3">
+            Kết quả tra cứu cho số điện thoại: <span class="font-bold text-slate-800">{{ phone_query }}</span>
+        </p>
+        {% endif %}
+    </div>
+
+    <!-- BOOKINGS LIST -->
+    {% if bookings %}
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[750px]">
+                <thead>
+                    <tr class="bg-slate-900 text-white text-xs">
+                        <th class="p-4 font-bold">Mã Đặt Sân</th>
+                        <th class="p-4 font-bold">Sân & Địa Chỉ</th>
+                        <th class="p-4 font-bold">Thời Gian Chơi</th>
+                        <th class="p-4 font-bold">Tổng Tiền</th>
+                        <th class="p-4 font-bold">Trạng Thái</th>
+                        <th class="p-4 font-bold text-right">Chi Tiết</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-xs">
+                    {% for b in bookings %}
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                        
+                        <td class="p-4 font-black text-slate-900">
+                            <a href="{% url 'booking_detail' b.booking_code %}" class="hover:text-emerald-600 transition-colors">
+                                #{{ b.booking_code }}
+                            </a>
+                            <div class="text-[10px] text-slate-400 font-normal mt-0.5">
+                                {{ b.created_at|date:"d/m/Y H:i" }}
+                            </div>
+                        </td>
+
+                        <td class="p-4">
+                            <span class="font-extrabold text-slate-900 block">{{ b.court.name }}</span>
+                            <span class="text-[11px] text-slate-500">{{ b.court.location }}</span>
+                        </td>
+
+                        <td class="p-4">
+                            <div class="font-bold text-emerald-700">{{ b.booking_date|date:"l, d/m/Y" }}</div>
+                            <div class="text-[11px] font-semibold text-slate-700 mt-0.5">
+                                {{ b.start_time|time:"H:i" }} - {{ b.end_time|time:"H:i" }}
+                            </div>
+                        </td>
+
+                        <td class="p-4">
+                            <span class="font-black text-slate-900 block text-sm">{{ b.total_price|intcomma }} đ</span>
+                            {% if b.payment_status == 'paid' %}
+                                <span class="text-[10px] font-bold text-emerald-600">Đã thanh toán</span>
+                            {% else %}
+                                <span class="text-[10px] font-bold text-red-500">Chưa thanh toán</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="p-4">
+                            {% if b.status == 'confirmed' %}
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">
+                                    Đã xác nhận
+                                </span>
+                            {% elif b.status == 'pending' %}
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800">
+                                    Chờ duyệt
+                                </span>
+                            {% elif b.status == 'completed' %}
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-blue-100 text-blue-800">
+                                    Hoàn thành
+                                </span>
+                            {% else %}
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-red-100 text-red-800">
+                                    Đã hủy
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="p-4 text-right">
+                            <a href="{% url 'booking_detail' b.booking_code %}" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs inline-flex items-center gap-1 transition-colors">
+                                Xem vé <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </a>
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white rounded-3xl p-12 text-center shadow-sm border border-slate-100">
+        <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-2xl mb-4">
+            <i class="fa-solid fa-ticket-simple"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-800">Chưa có thông tin đặt sân nào</h3>
+        <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto mb-6">
+            {% if not user.is_authenticated and not phone_query %}
+                Vui lòng nhập số điện thoại của bạn ở ô trên để tra cứu, hoặc đăng nhập để xem toàn bộ lịch sử đặt sân.
+            {% else %}
+                Không tìm thấy lượt đặt sân nào với thông tin đã cung cấp.
+            {% endif %}
+        </p>
+        <a href="{% url 'book_court' %}" class="px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all">
+            <i class="fa-solid fa-plus mr-1"></i> Đặt sân ngay bây giờ
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

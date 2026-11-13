@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Đăng Nhập - PicklePro{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center px-4 py-12">
+    <div class="bg-white rounded-3xl p-8 sm:p-10 shadow-lg border border-slate-100 w-full max-w-md">
+        
+        <div class="text-center mb-8">
+            <div class="w-14 h-14 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg shadow-emerald-500/20">
+                <i class="fa-solid fa-table-tennis-paddle-ball"></i>
+            </div>
+            <h1 class="text-2xl font-black text-slate-900">Đăng Nhập PicklePro</h1>
+            <p class="text-xs text-slate-500 mt-1">Đăng nhập để theo dõi lịch đặt sân và nhận ưu đãi</p>
+        </div>
+
+        <form method="POST" action="{% url 'login' %}" class="space-y-4">
+            {% csrf_token %}
+            
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Tên đăng nhập</label>
+                <div class="relative">
+                    <i class="fa-solid fa-user absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                    <input type="text" name="username" required placeholder="Nhập tên đăng nhập..." class="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mật khẩu</label>
+                <div class="relative">
+                    <i class="fa-solid fa-lock absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                    <input type="password" name="password" required placeholder="Nhập mật khẩu..." class="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                </div>
+            </div>
+
+            <button type="submit" class="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-lg shadow-emerald-600/30 transition-all hover:scale-[1.01] active:scale-[0.99] mt-2">
+                Đăng Nhập Ngay
+            </button>
+        </form>
+
+        <!-- DEMO ACCOUNTS HELPER -->
+        <div class="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
+            <span class="font-bold text-slate-800 block mb-1 flex items-center gap-1.5">
+                <i class="fa-solid fa-key text-amber-500"></i> Tài khoản mẫu thử nghiệm:
+            </span>
+            <div class="space-y-1 text-[11px]">
+                <div>• Quản trị viên: <code class="font-bold text-emerald-700">admin</code> / <code class="font-bold text-emerald-700">admin123</code></div>
+                <div>• Khách hàng: <code class="font-bold text-blue-700">khachhang</code> / <code class="font-bold text-blue-700">123456</code></div>
+            </div>
+        </div>
+
+        <div class="text-center mt-6 pt-6 border-t border-slate-100 text-xs text-slate-500">
+            Chưa có tài khoản? 
+            <a href="{% url 'register' %}" class="font-bold text-emerald-600 hover:text-emerald-700 ml-1">Đăng ký thành viên</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}{{ court.name }} - Chi Tiết Sân & Lịch Trống | PicklePro{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    
+    <!-- BREADCRUMB -->
+    <nav class="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6">
+        <a href="{% url 'dashboard' %}" class="hover:text-emerald-600 transition-colors">Trang chủ</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <span class="text-slate-800">{{ court.name }}</span>
+    </nav>
+
+    <!-- COURT HEADER & OVERVIEW -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 mb-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            <!-- IMAGE -->
+            <div class="lg:col-span-5 h-72 sm:h-80 rounded-2xl overflow-hidden relative shadow-md">
+                {% if court.image_url %}
+                    <img src="{{ court.image_url }}" alt="{{ court.name }}" class="w-full h-full object-cover">
+                {% else %}
+                    <div class="w-full h-full bg-emerald-900 text-emerald-300 flex items-center justify-center">
+                        <i class="fa-solid fa-table-tennis-paddle-ball text-6xl"></i>
+                    </div>
+                {% endif %}
+                <div class="absolute top-3 left-3 flex gap-2">
+                    <span class="px-3 py-1 rounded-lg text-xs font-bold bg-slate-900/80 backdrop-blur-md text-white">
+                        Mã: {{ court.code }}
+                    </span>
+                    <span class="px-3 py-1 rounded-lg text-xs font-bold {% if court.court_type == 'vip' %}bg-amber-500 text-white{% elif court.court_type == 'outdoor' %}bg-sky-500 text-white{% else %}bg-emerald-600 text-white{% endif %}">
+                        {{ court.get_court_type_display }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- DETAILS -->
+            <div class="lg:col-span-7 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <h1 class="text-2xl sm:text-3xl font-black text-slate-900">{{ court.name }}</h1>
+                    
+                    {% if court.status == 'available' %}
+                        <span class="px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 badge-pulse"></span> Đang hoạt động
+                        </span>
+                    {% elif court.status == 'maintenance' %}
+                        <span class="px-3.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1.5">
+                            <i class="fa-solid fa-wrench text-xs"></i> Đang bảo trì
+                        </span>
+                    {% else %}
+                        <span class="px-3.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-200">
+                            Đã đóng
+                        </span>
+                    {% endif %}
+                </div>
+
+                <p class="text-sm text-slate-600 flex items-center gap-2">
+                    <i class="fa-solid fa-location-dot text-emerald-600"></i>
+                    <span>{{ court.location }}</span>
+                </p>
+
+                <p class="text-sm text-slate-500 leading-relaxed">
+                    {{ court.description|default:"Sân thi đấu tiêu chuẩn chất lượng cao, bề mặt sơn acrylic độ bám hoàn hảo, hệ thống chiếu sáng đèn LED chống lóa hiện đại." }}
+                </p>
+
+                <!-- PRICE BOX -->
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Giá thuê niêm yết</span>
+                        <div class="text-2xl font-black text-emerald-600">
+                            {{ court.price_per_hour|intcomma }} VNĐ <span class="text-xs font-semibold text-slate-500">/ 1 giờ</span>
+                        </div>
+                    </div>
+                    {% if court.status == 'available' %}
+                    <a href="{% url 'book_court_specific' court.id %}" class="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-all hover:scale-105">
+                        <i class="fa-solid fa-calendar-plus mr-1"></i> Đặt sân này ngay
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- FEATURES -->
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">Tiện ích bao gồm:</span>
+                    <div class="flex flex-wrap gap-2">
+                        {% for feat in features_list %}
+                        <span class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-100 flex items-center gap-1.5">
+                            <i class="fa-solid fa-check text-emerald-600 text-[10px]"></i> {{ feat }}
+                        </span>
+                        {% empty %}
+                        <span class="text-xs text-slate-500">{{ court.features }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TIMETABLE / SLOTS SELECTOR SECTION -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-100 gap-4">
+            <div>
+                <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-clock text-emerald-600"></i> Lịch Khung Giờ Trong Ngày
+                </h3>
+                <p class="text-xs text-slate-500 mt-1">Bấm chọn khung giờ còn trống để đặt sân siêu nhanh</p>
+            </div>
+
+            <!-- DATE PICKER FORM -->
+            <form method="GET" class="flex items-center gap-3">
+                <label class="text-xs font-bold text-slate-600 whitespace-nowrap">Chọn ngày:</label>
+                <input type="date" name="date" value="{{ selected_date|date:'Y-m-d' }}" min="{{ today|date:'Y-m-d' }}" onchange="this.form.submit()" class="px-3 py-2 rounded-xl border border-slate-200 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                <noscript><button type="submit" class="px-3 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg">Xem</button></noscript>
+            </form>
+        </div>
+
+        <!-- STATUS EXPLANATION -->
+        <div class="flex items-center gap-6 py-4 text-xs font-semibold text-slate-600">
+            <span class="flex items-center gap-2">
+                <span class="w-3.5 h-3.5 rounded-md bg-emerald-500 inline-block"></span> Còn trống
+            </span>
+            <span class="flex items-center gap-2">
+                <span class="w-3.5 h-3.5 rounded-md bg-red-400 inline-block"></span> Đã có người đặt
+            </span>
+        </div>
+
+        <!-- SLOTS GRID -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 pt-2">
+            {% for s in slots %}
+            <div class="rounded-2xl p-3 border transition-all text-center flex flex-col justify-between min-h-[110px] {% if s.is_booked %}bg-red-50 border-red-200 text-red-800{% else %}bg-emerald-50/60 border-emerald-200/80 text-emerald-900 hover:bg-emerald-100/70 hover:shadow-sm{% endif %}">
+                <div>
+                    <span class="text-xs font-extrabold block">{{ s.start }} - {{ s.end }}</span>
+                    {% if s.is_booked %}
+                        <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700">
+                            Đã đặt
+                        </span>
+                        <div class="text-[10px] text-red-500 mt-1 truncate" title="{{ s.booking.customer_name }}">
+                            {{ s.booking.customer_name }}
+                        </div>
+                    {% else %}
+                        <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700">
+                            Còn trống
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="mt-2">
+                    {% if not s.is_booked and court.status == 'available' %}
+                        <a href="{% url 'book_court_specific' court.id %}?date={{ selected_date|date:'Y-m-d' }}&start={{ s.start }}&end={{ s.end }}" class="w-full py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] block transition-colors">
+                            Đặt giờ này
+                        </a>
+                    {% elif s.is_booked %}
+                        <button disabled class="w-full py-1.5 rounded-lg bg-slate-200 text-slate-400 font-bold text-[11px] cursor-not-allowed">
+                            Kín chỗ
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

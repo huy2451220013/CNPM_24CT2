@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Đặt Sân Pickleball - PicklePro{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    
+    <!-- BREADCRUMB -->
+    <nav class="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-6">
+        <a href="{% url 'dashboard' %}" class="hover:text-emerald-600 transition-colors">Trang chủ</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <span class="text-slate-800">Đặt sân trực tuyến</span>
+    </nav>
+
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        
+        <!-- HEADER -->
+        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-900 p-6 sm:p-8 text-white">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white text-lg">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black">Đặt Sân Pickleball Trực Tuyến</h1>
+                    <p class="text-xs text-emerald-300">Giữ chỗ tức thì • Không lo trùng lịch • Thanh toán tiện lợi</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FORM -->
+        <form method="POST" action="{% url 'book_court' %}" id="bookingForm" class="p-6 sm:p-8 space-y-8">
+            {% csrf_token %}
+
+            <!-- SECTION 1: CHỌN SÂN & THỜI GIAN -->
+            <div>
+                <h3 class="text-sm font-black uppercase tracking-wider text-slate-900 mb-4 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs flex items-center justify-center font-bold">1</span>
+                    Chọn Sân & Thời Gian Thi Đấu
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- COURT -->
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Chọn cụm sân <span class="text-red-500">*</span></label>
+                        <select name="court_id" id="courtSelect" required class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                            {% for c in courts %}
+                            <option value="{{ c.id }}" data-price="{{ c.price_per_hour }}" {% if selected_court and selected_court.id == c.id %}selected{% endif %}>
+                                {{ c.name }} ({{ c.get_court_type_display }} • {{ c.price_per_hour|intcomma }} đ/giờ)
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- DATE -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Ngày chơi <span class="text-red-500">*</span></label>
+                        <input type="date" name="booking_date" id="bookingDate" value="{{ param_date }}" min="{{ today|date:'Y-m-d' }}" required class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+
+                    <!-- TIME RANGE -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Giờ bắt đầu <span class="text-red-500">*</span></label>
+                            <select name="start_time" id="startTime" required class="w-full px-3 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                                {% for h in "06,07,08,09,10,11,12,13,14,15,16,17,18,19,20,21"|make_list %}
+                                {% endfor %}
+                                <option value="06:00" {% if param_start == "06:00" %}selected{% endif %}>06:00</option>
+                                <option value="07:00" {% if param_start == "07:00" %}selected{% endif %}>07:00</option>
+                                <option value="08:00" {% if param_start == "08:00" %}selected{% endif %}>08:00</option>
+                                <option value="09:00" {% if param_start == "09:00" %}selected{% endif %}>09:00</option>
+                                <option value="10:00" {% if param_start == "10:00" %}selected{% endif %}>10:00</option>
+                                <option value="11:00" {% if param_start == "11:00" %}selected{% endif %}>11:00</option>
+                                <option value="12:00" {% if param_start == "12:00" %}selected{% endif %}>12:00</option>
+                                <option value="13:00" {% if param_start == "13:00" %}selected{% endif %}>13:00</option>
+                                <option value="14:00" {% if param_start == "14:00" %}selected{% endif %}>14:00</option>
+                                <option value="15:00" {% if param_start == "15:00" %}selected{% endif %}>15:00</option>
+                                <option value="16:00" {% if param_start == "16:00" %}selected{% endif %}>16:00</option>
+                                <option value="17:00" {% if param_start == "17:00" %}selected{% endif %}>17:00</option>
+                                <option value="18:00" {% if param_start == "18:00" %}selected{% endif %}>18:00</option>
+                                <option value="19:00" {% if param_start == "19:00" %}selected{% endif %}>19:00</option>
+                                <option value="20:00" {% if param_start == "20:00" %}selected{% endif %}>20:00</option>
+                                <option value="21:00" {% if param_start == "21:00" %}selected{% endif %}>21:00</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Giờ kết thúc <span class="text-red-500">*</span></label>
+                            <select name="end_time" id="endTime" required class="w-full px-3 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                                <option value="07:00" {% if param_end == "07:00" %}selected{% endif %}>07:00</option>
+                                <option value="08:00" {% if param_end == "08:00" %}selected{% endif %}>08:00</option>
+                                <option value="09:00" {% if param_end == "09:00" %}selected{% endif %}>09:00</option>
+                                <option value="10:00" {% if param_end == "10:00" %}selected{% endif %}>10:00</option>
+                                <option value="11:00" {% if param_end == "11:00" %}selected{% endif %}>11:00</option>
+                                <option value="12:00" {% if param_end == "12:00" %}selected{% endif %}>12:00</option>
+                                <option value="13:00" {% if param_end == "13:00" %}selected{% endif %}>13:00</option>
+                                <option value="14:00" {% if param_end == "14:00" %}selected{% endif %}>14:00</option>
+                                <option value="15:00" {% if param_end == "15:00" %}selected{% endif %}>15:00</option>
+                                <option value="16:00" {% if param_end == "16:00" %}selected{% endif %}>16:00</option>
+                                <option value="17:00" {% if param_end == "17:00" %}selected{% endif %}>17:00</option>
+                                <option value="18:00" {% if param_end == "18:00" %}selected{% endif %}>18:00</option>
+                                <option value="19:00" {% if param_end == "19:00" %}selected{% endif %}>19:00</option>
+                                <option value="20:00" {% if param_end == "20:00" %}selected{% endif %}>20:00</option>
+                                <option value="21:00" {% if param_end == "21:00" %}selected{% endif %}>21:00</option>
+                                <option value="22:00" {% if param_end == "22:00" %}selected{% endif %}>22:00</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- LIVE ESTIMATE PRICE BOX -->
+                <div class="mt-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-emerald-900 block">Ước tính thời lượng & chi phí</span>
+                            <span id="durationDisplay" class="text-xs text-emerald-700">Thời gian: 1 giờ</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-slate-500 block">Tổng thanh toán dự kiến</span>
+                        <div id="priceDisplay" class="text-xl font-black text-emerald-700">0 VNĐ</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- SECTION 2: THÔNG TIN KHÁCH HÀNG -->
+            <div class="pt-6 border-t border-slate-100">
+                <h3 class="text-sm font-black uppercase tracking-wider text-slate-900 mb-4 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs flex items-center justify-center font-bold">2</span>
+                    Thông Tin Khách Hàng
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Họ và tên khách <span class="text-red-500">*</span></label>
+                        <input type="text" name="customer_name" value="{{ initial_user.name }}" placeholder="Ví dụ: Nguyễn Văn An" required class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Số điện thoại liên hệ <span class="text-red-500">*</span></label>
+                        <input type="tel" name="customer_phone" value="{{ initial_user.phone }}" placeholder="Ví dụ: 0901234567" required class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Email nhận vé (không bắt buộc)</label>
+                        <input type="email" name="customer_email" value="{{ initial_user.email }}" placeholder="Ví dụ: email@gmail.com" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Ghi chú hoặc yêu cầu thêm (mượn vợt, bóng thi đấu, nước giải khát...)</label>
+                        <textarea name="notes" rows="2" placeholder="Ghi chú thêm nếu bạn có yêu cầu đặc biệt..." class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: HÌNH THỨC THANH TOÁN -->
+            <div class="pt-6 border-t border-slate-100">
+                <h3 class="text-sm font-black uppercase tracking-wider text-slate-900 mb-4 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs flex items-center justify-center font-bold">3</span>
+                    Hình Thức Thanh Toán
+                </h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    
+                    <label class="p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 cursor-pointer flex items-center gap-3 transition-colors bg-white">
+                        <input type="radio" name="payment_method" value="banking" checked class="text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-bold text-slate-900">Chuyển khoản VietQR</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Khuyên dùng</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-0.5">Quét mã QR tự động điền số tiền & nội dung</p>
+                        </div>
+                    </label>
+
+                    <label class="p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 cursor-pointer flex items-center gap-3 transition-colors bg-white">
+                        <input type="radio" name="payment_method" value="cash" class="text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+                        <div>
+                            <span class="text-sm font-bold text-slate-900">Tiền mặt tại quầy</span>
+                            <p class="text-xs text-slate-500 mt-0.5">Thanh toán trực tiếp khi đến nhận sân</p>
+                        </div>
+                    </label>
+
+                </div>
+            </div>
+
+            <!-- SUBMIT BUTTON -->
+            <div class="pt-6 border-t border-slate-100">
+                <button type="submit" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-base shadow-lg shadow-emerald-600/30 transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-circle-check"></i> Xác Nhận Đặt Sân Ngay
+                </button>
+                <p class="text-center text-xs text-slate-400 mt-3">
+                    <i class="fa-solid fa-shield-halved text-emerald-500 mr-1"></i> Hệ thống tự động kiểm tra chống trùng lịch 100%
+                </p>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- PRICE CALCULATOR JAVASCRIPT -->
+<script>
+    function updatePrice() {
+        const courtSelect = document.getElementById('courtSelect');
+        const startSelect = document.getElementById('startTime');
+        const endSelect = document.getElementById('endTime');
+        const durationDisplay = document.getElementById('durationDisplay');
+        const priceDisplay = document.getElementById('priceDisplay');
+
+        if (!courtSelect || !startSelect || !endSelect) return;
+
+        const selectedOption = courtSelect.options[courtSelect.selectedIndex];
+        const pricePerHour = parseFloat(selectedOption.getAttribute('data-price') || 0);
+
+        const startHour = parseInt(startSelect.value.split(':')[0]);
+        const endHour = parseInt(endSelect.value.split(':')[0]);
+
+        if (endHour <= startHour) {
+            durationDisplay.textContent = 'Giờ kết thúc phải lớn hơn giờ bắt đầu!';
+            durationDisplay.className = 'text-xs text-red-600 font-bold';
+            priceDisplay.textContent = '0 VNĐ';
+            return;
+        }
+
+        const duration = endHour - startHour;
+        const total = duration * pricePerHour;
+
+        durationDisplay.textContent = `Thời lượng: ${duration} giờ (từ ${startSelect.value} đến ${endSelect.value})`;
+        durationDisplay.className = 'text-xs text-emerald-700';
+        priceDisplay.textContent = total.toLocaleString('vi-VN') + ' VNĐ';
+    }
+
+    document.getElementById('courtSelect').addEventListener('change', updatePrice);
+    document.getElementById('startTime').addEventListener('change', updatePrice);
+    document.getElementById('endTime').addEventListener('change', updatePrice);
+
+    // Run once on load
+    updatePrice();
+</script>
+{% endblock %}
