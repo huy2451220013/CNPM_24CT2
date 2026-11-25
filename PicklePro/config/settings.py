@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
+import importlib.util
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,16 +22,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)!w=%v0442358o_m)oi0n8mciq6i76k@telf+)!x+5&w7ja-v$'
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure-)!w=%v0442358o_m)oi0n8mciq6i76k@telf+)!x+5&w7ja-v$'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1')
 
 ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.pythonanywhere.com',
     'http://*.pythonanywhere.com',
+    'https://*.onrender.com',
 ]
 
 
@@ -57,6 +63,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if importlib.util.find_spec('whitenoise') is not None:
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 
 ROOT_URLCONF = 'config.urls'
 
@@ -86,6 +95,7 @@ USE_SQLITE = (
     os.environ.get('USE_SQLITE', 'False').lower() in ('true', '1')
     or 'PYTHONANYWHERE_DOMAIN' in os.environ
     or 'PYTHONANYWHERE_SITE' in os.environ
+    or 'RENDER' in os.environ
 )
 
 if USE_SQLITE:

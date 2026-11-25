@@ -10,7 +10,17 @@ import datetime
 class Command(BaseCommand):
     help = "Seed initial data for PicklePro courts and sample bookings"
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--if-empty",
+            action="store_true",
+            help="Chỉ khởi tạo dữ liệu mẫu nếu chưa có dữ liệu sân nào trong CSDL.",
+        )
+
     def handle(self, *args, **options):
+        if options.get("if_empty") and Court.objects.exists():
+            self.stdout.write("Cơ sở dữ liệu đã có dữ liệu sân, bỏ qua bước seed_data.")
+            return
         self.stdout.write("Khởi tạo dữ liệu mẫu cho PicklePro...")
 
         # 1. Tạo hoặc cập nhật tài khoản admin và khách hàng mẫu
