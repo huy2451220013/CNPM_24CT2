@@ -27,6 +27,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.pythonanywhere.com',
+    'http://*.pythonanywhere.com',
+]
+
 
 # Application definition
 
@@ -77,7 +82,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 import os
 
-USE_SQLITE = os.environ.get('USE_SQLITE', 'False').lower() in ('true', '1')
+USE_SQLITE = (
+    os.environ.get('USE_SQLITE', 'False').lower() in ('true', '1')
+    or 'PYTHONANYWHERE_DOMAIN' in os.environ
+    or 'PYTHONANYWHERE_SITE' in os.environ
+)
 
 if USE_SQLITE:
     DATABASES = {
@@ -138,7 +147,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = [BASE_DIR / 'static'] if (BASE_DIR / 'static').exists() else []
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'

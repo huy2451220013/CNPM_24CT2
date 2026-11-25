@@ -41,6 +41,7 @@ Desktop.ini
 /PicklePro/*.pptx
 /PicklePro/*.drawio
 /PicklePro/*.txt
+!/PicklePro/requirements.txt
 /PicklePro/*.json
 /PicklePro/*.png
 /PicklePro/*.jpg
